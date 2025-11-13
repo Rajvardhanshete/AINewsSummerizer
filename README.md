@@ -1,2 +1,3 @@
-# AINewsSummerizer
-Web Application for summarizing news on interest of user
+# AI News Summerizer
+Web Application for summarizing news on Interest of User
+
