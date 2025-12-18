@@ -1,33 +1,58 @@
 package com.newsaisummeriser.newsai.controller;
 
+import com.newsaisummeriser.newsai.model.Article;
 import com.newsaisummeriser.newsai.model.Topic;
+import com.newsaisummeriser.newsai.service.ArticleService;
 import com.newsaisummeriser.newsai.service.TopicService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
-@RequestMapping("/topic")
+@RequestMapping("/api/topic")
+@CrossOrigin(origins = "*") // allow React access
 public class TopicController {
+
     private final TopicService topicService;
 
-    public TopicController(TopicService topicService){
+    private final ArticleService articleService;
+    public TopicController(TopicService topicService,
+                           ArticleService articleService) {
         this.topicService = topicService;
+        this.articleService = articleService;
     }
+
+    @GetMapping("/{topicId}/articles")
+    public Set<Article> getArticlesByTopic(@PathVariable Long topicId){
+        return topicService.getArticlesByTopic(topicId);
+    }
+
+
+    @PostMapping("/{topicId}/articles")
+    public Article addArticleToTopic(
+            @PathVariable Long topicId,
+            @RequestBody Article article){
+        return articleService.saveArticleUnderTopic(topicId, article);
+    }
+
+    @PostMapping
+    public Topic create(@RequestBody Topic topic){
+        return topicService.createTopic(topic);
+    }
+
 
     @GetMapping
-    public String listTopics(Model model){
-        List<Topic> topics = topicService.getAllTopics();
-        model.addAttribute("topics",topics);
-        return "topics/list";
+    public List<Topic> getAll(){
+        return topicService.getAllTopics();
     }
 
-    @GetMapping("/add")
-    public String showAddForm(Model model){
-        model.addAttribute("topics", new Topic());
-        return "topics/add";
+    @GetMapping("/{id}")
+    public Topic getOne(@PathVariable Long id){
+        return topicService.getTopic(id);
     }
+
+
 }
